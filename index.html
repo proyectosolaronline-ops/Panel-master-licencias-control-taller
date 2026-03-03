@@ -867,22 +867,15 @@ function navTo(pageId, navId){
    API  (contraseña va en body POST, no en URL)
 ══════════════════════════════════════════ */
 async function apiGet(action, extra={}){
-  // GET solo para read-only, sin credenciales en URL excepto acción pública
-  const qs = new URLSearchParams({action, ...extra}).toString();
-  const res = await fetch(`${API_URL}?${qs}`,{
-    method:'GET',
-    headers:{'X-Admin-Pass': ADMIN_PASS}  // header custom — más seguro que querystring
-  });
+  const qs = new URLSearchParams({action, adminPass: ADMIN_PASS, ...extra}).toString();
+  const res = await fetch(`${API_URL}?${qs}`);
   if(!res.ok) throw new Error('HTTP '+res.status);
   return res.json();
 }
 async function apiPost(action, data={}){
   const res = await fetch(API_URL,{
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'X-Admin-Pass': ADMIN_PASS   // header, nunca en URL
-    },
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify({action, adminPass: ADMIN_PASS, data})
   });
   if(!res.ok) throw new Error('HTTP '+res.status);
