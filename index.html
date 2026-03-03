@@ -864,7 +864,7 @@ function navTo(pageId, navId){
 }
 
 /* ══════════════════════════════════════════
-   API  (contraseña va en body POST, no en URL)
+   API — Todo por GET para evitar CORS con Apps Script
 ══════════════════════════════════════════ */
 async function apiGet(action, extra={}){
   const qs = new URLSearchParams({action, adminPass: ADMIN_PASS, ...extra}).toString();
@@ -873,11 +873,14 @@ async function apiGet(action, extra={}){
   return res.json();
 }
 async function apiPost(action, data={}){
-  const res = await fetch(API_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({action, adminPass: ADMIN_PASS, data})
-  });
+  // Apps Script bloquea POST+JSON por CORS desde dominios externos.
+  // Solución: mandar todo por GET con data serializado como string JSON.
+  const qs = new URLSearchParams({
+    action,
+    adminPass: ADMIN_PASS,
+    data: JSON.stringify(data)
+  }).toString();
+  const res = await fetch(`${API_URL}?${qs}`);
   if(!res.ok) throw new Error('HTTP '+res.status);
   return res.json();
 }
