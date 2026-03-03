@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#07080f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="TallerAdmin"/>
+<title>TallerPro · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Familjen+Grotesk:wght@700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#07080f;--bg2:#0d0e1a;--bg3:#131425;--card:#0f1020;
+  --bdr:rgba(255,255,255,0.06);--bdr2:rgba(255,255,255,0.11);
+  --p:#6c63ff;--p2:#9d8fff;--p3:#c4baff;
+  --ok:#00e5a0;--warn:#ffb020;--err:#ff6b6b;--info:#38c5f5;
+  --txt:#dde0f0;--txt2:#6b6e8f;--txt3:#1e1f35;
+  --ff:'Space Grotesk',sans-serif;--fh:'Familjen Grotesk',sans-serif;
+  --r:14px;--rs:10px;
+  --nav-h:64px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);font-size:15px;}
+
+/* ── NOISE TEXTURE ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* ── LOGIN ── */
+#loginWrap{
+  position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px;
+  background:
+    radial-gradient(ellipse 70% 40% at 30% 20%,rgba(108,99,255,0.15) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 30% at 80% 70%,rgba(0,229,160,0.08) 0%,transparent 60%),
+    var(--bg);
+}
+.l-logo{margin-bottom:24px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.l-icon{
+  width:76px;height:76px;border-radius:24px;
+  background:linear-gradient(135deg,var(--p) 0%,#9f60ff 100%);
+  display:flex;align-items:center;justify-content:center;font-size:36px;
+  box-shadow:0 0 0 1px rgba(108,99,255,0.3),0 20px 60px rgba(108,99,255,0.4);
+  animation:breathe 4s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 1px rgba(108,99,255,0.3),0 20px 60px rgba(108,99,255,0.35)}50%{box-shadow:0 0 0 1px rgba(108,99,255,0.5),0 20px 80px rgba(108,99,255,0.6)}}
+.l-title{font-family:var(--fh);font-size:30px;font-weight:800;letter-spacing:-1.5px;line-height:1;}
+.l-sub{color:var(--txt2);font-size:12px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
+.l-card{
+  background:rgba(13,14,26,0.9);border:1px solid var(--bdr2);border-radius:20px;
+  padding:26px 22px;width:100%;max-width:390px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.04), var(--shadow);
+}
+.ig{margin-bottom:14px;}
+.ig label{
+  display:block;font-size:10px;font-weight:700;color:var(--txt2);
+  margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;
+}
+.ig input{
+  width:100%;padding:13px 15px;background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:var(--rs);color:var(--txt);font-size:14px;font-family:var(--ff);outline:none;
+  transition:border .2s,box-shadow .2s;
+}
+.ig input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(108,99,255,0.12);}
+.ig input::placeholder{color:var(--txt3);}
+.btn-main{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--p),#9f60ff);
+  color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;
+  font-family:var(--ff);cursor:pointer;transition:opacity .2s,transform .15s;
+  letter-spacing:.2px;
+}
+.btn-main:active{transform:scale(.98);opacity:.88;}
+.l-err{color:var(--err);font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
+.l-sep{text-align:center;font-size:11px;color:var(--txt2);margin:12px 0;}
+
+/* ── APP ── */
+#appWrap{position:fixed;inset:0;display:none;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{
+  padding:calc(var(--safe-t) + 10px) 16px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(7,8,15,0.95);border-bottom:1px solid var(--bdr);
+  flex-shrink:0;backdrop-filter:blur(20px);
+}
+.tb-brand{font-family:var(--fh);font-size:18px;font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.5px;}
+.tb-icon{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,var(--p),#9f60ff);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  box-shadow:0 2px 12px rgba(108,99,255,0.4);
+}
+.tb-actions{display:flex;gap:8px;align-items:center;}
+.tb-btn{
+  width:36px;height:36px;border-radius:10px;background:var(--bg2);
+  border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;transition:background .2s,border .2s;
+}
+.tb-btn:active{background:var(--bg3);}
+.alerta-pill{
+  padding:5px 10px;border-radius:99px;font-size:10px;font-weight:700;
+  background:rgba(255,176,32,0.12);color:var(--warn);
+  border:1px solid rgba(255,176,32,0.25);display:flex;align-items:center;gap:4px;
+}
+
+/* ── STATS ── */
+.stats-row{
+  display:flex;overflow-x:auto;border-bottom:1px solid var(--bdr);
+  flex-shrink:0;scrollbar-width:none;background:var(--bg);
+}
+.stats-row::-webkit-scrollbar{display:none;}
+.stat{
+  flex:1;min-width:68px;padding:12px 8px;border-right:1px solid var(--bdr);
+  text-align:center;cursor:pointer;transition:background .2s;
+}
+.stat:last-child{border-right:none;}
+.stat:active{background:var(--bg2);}
+.stat-n{font-family:var(--fh);font-size:22px;font-weight:800;line-height:1;}
+.stat-l{font-size:9px;color:var(--txt2);margin-top:3px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.c-ok{color:var(--ok);}.c-warn{color:var(--warn);}.c-err{color:var(--err);}.c-info{color:var(--info);}
+
+/* ── PAGES ── */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:16px 14px calc(var(--nav-h) + var(--safe-b) + 16px);
+  display:none;-webkit-overflow-scrolling:touch;
+}
+.page.active{display:block;}
+
+/* ── BOTTOM NAV ── */
+.bottomnav{
+  height:var(--nav-h);padding-bottom:var(--safe-b);display:flex;align-items:center;
+  background:rgba(7,8,15,0.97);border-top:1px solid var(--bdr);flex-shrink:0;
+  backdrop-filter:blur(20px);
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;padding:8px 4px;color:var(--txt3);transition:color .2s;position:relative;
+}
+.nav-item.active{color:var(--p2);}
+.nav-item.active::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:2px;background:var(--p);border-radius:0 0 4px 4px;
+}
+.nav-item svg{width:22px;height:22px;stroke-width:1.8;}
+.nav-lbl{font-size:10px;font-weight:600;letter-spacing:.3px;}
+
+/* ── COMPONENTS ── */
+.page-title{font-family:var(--fh);font-size:22px;font-weight:800;margin-bottom:16px;letter-spacing:-.5px;}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;gap:4px;}
+.b-ok{background:rgba(0,229,160,0.1);color:var(--ok);}
+.b-warn{background:rgba(255,176,32,0.1);color:var(--warn);}
+.b-err{background:rgba(255,107,107,0.1);color:var(--err);}
+.b-info{background:rgba(56,197,245,0.1);color:var(--info);}
+.b-p{background:rgba(108,99,255,0.1);color:var(--p2);}
+
+/* ── VENCIMIENTO BANNER ── */
+.vence-banner{
+  background:linear-gradient(135deg,rgba(255,107,107,0.1),rgba(255,176,32,0.08));
+  border:1px solid rgba(255,107,107,0.2);border-radius:var(--r);
+  padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+}
+.vence-banner-icon{font-size:20px;flex-shrink:0;}
+.vence-banner-txt{font-size:12px;color:var(--txt2);line-height:1.5;}
+.vence-banner-txt strong{color:var(--warn);font-weight:700;}
+
+/* ── LICENCIAS ── */
+.lic-item{
+  background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);
+  margin-bottom:10px;overflow:hidden;transition:border .2s;
+}
+.lic-item.open{border-color:var(--bdr2);}
+.lic-header{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;}
+.lic-avatar{
+  width:44px;height:44px;border-radius:13px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-size:19px;font-weight:800;color:#fff;
+}
+.av-ok{background:linear-gradient(135deg,#00c896,#00e5a0);}
+.av-warn{background:linear-gradient(135deg,#e08000,#ffb020);}
+.av-err{background:linear-gradient(135deg,#c04040,#ff6b6b);}
+.av-bloq{background:linear-gradient(135deg,#3a3a55,#5a5a7a);}
+
+.lic-info{flex:1;min-width:0;}
+.lic-nombre{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lic-email{font-size:11px;color:var(--txt2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lic-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.lic-dias{font-size:10px;font-weight:600;}
+.lic-body{border-top:1px solid var(--bdr);padding:14px;display:none;}
+.lic-item.open .lic-body{display:block;}
+.lic-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.meta-item{background:var(--bg2);border-radius:var(--rs);padding:10px 12px;}
+.meta-lbl{font-size:9px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px;}
+.meta-val{font-size:13px;font-weight:600;}
+
+/* ── ACCIONES ── */
+.acciones-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn-acc{
+  padding:11px 6px;border-radius:var(--rs);border:1px solid var(--bdr);
+  background:var(--bg2);color:var(--txt2);font-size:12px;font-weight:600;
+  font-family:var(--ff);cursor:pointer;text-align:center;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.btn-acc:active{transform:scale(.97);}
+.btn-acc.renovar{color:var(--ok);border-color:rgba(0,229,160,0.2);background:rgba(0,229,160,0.05);}
+.btn-acc.editar{color:var(--p2);border-color:rgba(108,99,255,0.2);background:rgba(108,99,255,0.05);}
+.btn-acc.bloquear{color:var(--err);border-color:rgba(255,107,107,0.2);background:rgba(255,107,107,0.05);}
+.btn-acc.activar{color:var(--ok);border-color:rgba(0,229,160,0.2);background:rgba(0,229,160,0.05);}
+.btn-acc.compartir{color:var(--info);border-color:rgba(56,197,245,0.2);background:rgba(56,197,245,0.05);}
+.btn-acc.eliminar{color:var(--err);border-color:rgba(255,107,107,0.15);background:rgba(255,107,107,0.04);}
+
+/* ── SEARCH ── */
+.search-wrap{position:relative;margin-bottom:12px;}
+.search-wrap input{
+  width:100%;padding:11px 14px 11px 40px;background:var(--bg2);
+  border:1px solid var(--bdr);border-radius:var(--rs);color:var(--txt);
+  font-size:14px;font-family:var(--ff);outline:none;transition:border .2s;
+}
+.search-wrap input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(108,99,255,0.08);}
+.search-wrap input::placeholder{color:var(--txt3);}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--txt2);}
+.search-clear{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--txt2);font-size:18px;cursor:pointer;
+  display:none;line-height:1;padding:2px;
+}
+
+/* ── FILTER TABS ── */
+.ftabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.ftabs::-webkit-scrollbar{display:none;}
+.ftab{
+  padding:7px 14px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;
+  cursor:pointer;border:1px solid var(--bdr);background:var(--bg2);color:var(--txt2);
+  transition:all .2s;flex-shrink:0;
+}
+.ftab.active{background:rgba(108,99,255,0.15);color:var(--p3);border-color:rgba(108,99,255,0.3);}
+
+/* ── SORT BAR ── */
+.sort-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;font-size:12px;color:var(--txt2);
+}
+.sort-sel{
+  background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;
+  padding:5px 10px;color:var(--txt2);font-size:12px;font-family:var(--ff);outline:none;
+  appearance:none;cursor:pointer;
+}
+
+/* ── FAB ── */
+.fab{
+  position:fixed;right:16px;bottom:calc(var(--nav-h) + var(--safe-b) + 14px);
+  width:52px;height:52px;border-radius:15px;
+  background:linear-gradient(135deg,var(--p),#9f60ff);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:0 8px 28px rgba(108,99,255,0.5);cursor:pointer;
+  border:none;color:#fff;z-index:100;transition:transform .2s,box-shadow .2s;
+  font-weight:300;
+}
+.fab:active{transform:scale(.92);box-shadow:0 4px 16px rgba(108,99,255,0.4);}
+
+/* ── MODAL BASE ── */
+.modal-bg{
+  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);display:none;align-items:flex-end;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  background:var(--bg2);border-radius:22px 22px 0 0;
+  border:1px solid var(--bdr2);border-bottom:none;
+  width:100%;max-width:480px;margin:0 auto;
+  padding:20px 18px calc(20px + var(--safe-b));
+  max-height:92vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 -20px 60px rgba(0,0,0,0.5);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--bdr2);border-radius:99px;margin:0 auto 18px;}
+.modal-title{
+  font-family:var(--fh);font-size:19px;font-weight:800;margin-bottom:18px;
+  display:flex;justify-content:space-between;align-items:center;letter-spacing:-.3px;
+}
+.modal-close{background:none;border:none;color:var(--txt2);font-size:22px;cursor:pointer;line-height:1;}
+.fg{margin-bottom:13px;}
+.fg label{
+  display:block;font-size:10px;font-weight:700;color:var(--txt2);
+  margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;
+}
+.fg input,.fg select,.fg textarea{
+  width:100%;padding:12px 14px;background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:var(--rs);color:var(--txt);font-size:14px;font-family:var(--ff);outline:none;
+  transition:border .2s,box-shadow .2s;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  border-color:var(--p);box-shadow:0 0 0 3px rgba(108,99,255,0.1);
+}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--txt3);}
+.fg select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6e8f' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+}
+.fg select option{background:var(--bg3);}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg-hint{font-size:10px;color:var(--txt2);margin-top:4px;}
+
+.btn-save{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--p),#9f60ff);
+  color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;
+  font-family:var(--ff);cursor:pointer;margin-top:6px;letter-spacing:.2px;
+  transition:opacity .2s,transform .15s;
+}
+.btn-save:active{transform:scale(.98);opacity:.88;}
+.btn-cancel{
+  width:100%;padding:12px;background:var(--bg3);color:var(--txt2);
+  border:1px solid var(--bdr);border-radius:var(--rs);font-size:14px;font-weight:600;
+  font-family:var(--ff);cursor:pointer;margin-top:8px;transition:background .2s;
+}
+.btn-cancel:active{background:var(--card);}
+.renovar-rapido{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0;}
+.btn-rq{
+  padding:11px 6px;border-radius:var(--rs);
+  background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.2);
+  color:var(--ok);font-size:13px;font-weight:700;
+  font-family:var(--ff);cursor:pointer;text-align:center;transition:background .2s;
+}
+.btn-rq:active{background:rgba(0,229,160,0.13);}
+
+/* ── CONFIRMACIÓN MODAL ── */
+.confirm-icon{font-size:48px;text-align:center;margin-bottom:12px;}
+.confirm-titulo{font-family:var(--fh);font-size:18px;font-weight:800;text-align:center;margin-bottom:6px;}
+.confirm-sub{color:var(--txt2);font-size:13px;text-align:center;margin-bottom:20px;line-height:1.5;}
+.btn-confirm-ok{
+  width:100%;padding:14px;border:none;border-radius:var(--rs);
+  font-size:15px;font-weight:700;font-family:var(--ff);cursor:pointer;
+}
+.btn-confirm-err{background:linear-gradient(135deg,#c04040,var(--err));color:#fff;}
+.btn-confirm-warn{background:linear-gradient(135deg,#d08000,var(--warn));color:#fff;}
+
+/* ── COMPARTIR MODAL ── */
+.comp-header{text-align:center;padding:4px 0 16px;}
+.comp-check{
+  width:66px;height:66px;border-radius:20px;
+  background:linear-gradient(135deg,#00b377,var(--ok));
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;margin:0 auto 12px;
+  box-shadow:0 0 40px rgba(0,229,160,0.35);
+}
+.comp-titulo{font-family:var(--fh);font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px;}
+.comp-sub{color:var(--txt2);font-size:13px;}
+
+.qr-wrap{
+  background:#fff;border-radius:16px;padding:16px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;
+}
+#qrCanvas{display:flex;align-items:center;justify-content:center;}
+.qr-app-label{font-size:11px;color:#333;font-weight:700;text-align:center;}
+.qr-client-label{font-size:11px;color:#666;text-align:center;}
+
+.creds-box{
+  background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rs);
+  padding:14px;margin-bottom:14px;
+}
+.creds-title{
+  font-size:10px;font-weight:700;color:var(--txt2);
+  text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;
+}
+.cred-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--bdr);
+}
+.cred-row:last-child{border-bottom:none;}
+.cred-lbl{font-size:12px;color:var(--txt2);}
+.cred-val{
+  font-size:13px;font-weight:700;color:var(--txt);
+  max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+.share-titulo{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.share-btn{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:14px 6px;border-radius:var(--rs);border:1px solid var(--bdr);
+  background:var(--bg3);cursor:pointer;transition:all .15s;
+}
+.share-btn:active{transform:scale(.93);}
+.share-icon{font-size:26px;line-height:1;}
+.share-lbl{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
+.s-wa{border-color:rgba(37,211,102,0.3);background:rgba(37,211,102,0.06);}
+.s-wa .share-lbl{color:#25d366;}
+.s-email{border-color:rgba(108,99,255,0.3);background:rgba(108,99,255,0.06);}
+.s-email .share-lbl{color:var(--p2);}
+.s-sms{border-color:rgba(56,197,245,0.3);background:rgba(56,197,245,0.06);}
+.s-sms .share-lbl{color:var(--info);}
+.s-copy{border-color:rgba(255,176,32,0.3);background:rgba(255,176,32,0.06);}
+.s-copy .share-lbl{color:var(--warn);}
+
+/* ── HISTORIAL ── */
+.hist-item{
+  display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr);
+  font-size:12px;
+}
+.hist-item:last-child{border-bottom:none;}
+.hist-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.hist-txt{flex:1;line-height:1.5;}
+.hist-txt strong{font-weight:600;color:var(--txt);}
+.hist-time{font-size:10px;color:var(--txt2);white-space:nowrap;}
+
+/* ── CONFIG ── */
+.cfg-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;margin-bottom:10px;}
+.cfg-title{font-weight:700;font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.cfg-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--bdr);font-size:13px;
+}
+.cfg-row:last-child{border-bottom:none;}
+.cfg-lbl{color:var(--txt2);}
+.cfg-val{
+  font-weight:600;font-size:11px;max-width:170px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;color:var(--p2);
+}
+.cfg-section{margin-bottom:8px;}
+.cfg-section-title{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;}
+.toggle-lbl{font-size:13px;}
+.toggle{width:42px;height:24px;border-radius:99px;position:relative;cursor:pointer;transition:background .2s;border:none;background:var(--bg3);border:1px solid var(--bdr);}
+.toggle.on{background:var(--p);border-color:var(--p);}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(18px);}
+
+/* ── EXPORTAR ── */
+.export-btn{
+  display:flex;align-items:center;gap:8px;padding:11px 14px;
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rs);
+  color:var(--txt2);font-size:13px;font-weight:600;font-family:var(--ff);
+  cursor:pointer;width:100%;margin-bottom:8px;transition:background .2s;
+}
+.export-btn:active{background:var(--bg2);}
+.export-icon{font-size:18px;}
+
+/* ── TOAST ── */
+#toastBox{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none;
+  min-width:240px;max-width:90vw;
+}
+.toast{
+  padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;
+  text-align:center;animation:toastIn .3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.t-ok{background:#00e5a0;color:#002a1e;}
+.t-err{background:#ff6b6b;color:#3a0000;}
+.t-info{background:var(--p);color:#fff;}
+.t-warn{background:var(--warn);color:#3a1500;}
+
+.loader{
+  display:inline-block;width:16px;height:16px;
+  border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;
+  border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 20px;color:var(--txt2);}
+.empty-icon{font-size:44px;margin-bottom:12px;opacity:.6;}
+.empty-txt{font-size:14px;font-weight:500;}
+.empty-sub{font-size:12px;margin-top:4px;opacity:.7;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:99px;}
+
+/* ── PRONTO VENCER HIGHLIGHT ── */
+.lic-item.critico{border-color:rgba(255,107,107,0.2);background:rgba(255,107,107,0.02);}
+.lic-item.warning{border-color:rgba(255,176,32,0.15);}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div id="loginWrap">
+  <div class="l-logo">
+    <div class="l-icon">🛡️</div>
+    <div class="l-title">TallerPro Admin</div>
+    <div class="l-sub">Panel de Control</div>
+  </div>
+  <div class="l-card">
+    <div class="ig">
+      <label>URL de Apps Script</label>
+      <input type="url" id="lUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"/>
+    </div>
+    <div class="ig">
+      <label>Contraseña Admin</label>
+      <input type="password" id="lPass" placeholder="Tu contraseña segura"/>
+    </div>
+    <div class="ig">
+      <label>URL de la App Cliente (para compartir)</label>
+      <input type="url" id="lAppUrl" placeholder="https://tuusuario.github.io/tallerpro/"/>
+    </div>
+    <button class="btn-main" onclick="doLogin()">🔐 Entrar al Panel</button>
+    <div class="l-err" id="lErr"></div>
+    <div class="l-sep">Datos guardados en sesión · Se borran al cerrar</div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="appWrap">
+
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-icon">🛡️</div>
+      TallerPro
+    </div>
+    <div class="tb-actions">
+      <span id="alertaPill" class="alerta-pill" style="display:none">⚠️ <span id="alertaN">0</span></span>
+      <div class="tb-btn" onclick="abrirCompartirDatos({},'qr_solo')" title="QR del sistema">📲</div>
+      <div class="tb-btn" onclick="cargarLicencias()" title="Actualizar">🔄</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat" onclick="setF('todos',null)"><div class="stat-n c-info" id="sTot">–</div><div class="stat-l">Total</div></div>
+    <div class="stat" onclick="setF('activo',null)"><div class="stat-n c-ok" id="sAct">–</div><div class="stat-l">Activos</div></div>
+    <div class="stat" onclick="setF('por_vencer',null)"><div class="stat-n c-warn" id="sPV">–</div><div class="stat-l">x Vencer</div></div>
+    <div class="stat" onclick="setF('vencido',null)"><div class="stat-n c-err" id="sVen">–</div><div class="stat-l">Vencidos</div></div>
+    <div class="stat" onclick="setF('bloqueado',null)"><div class="stat-n c-err" id="sBlo">–</div><div class="stat-l">Bloqueados</div></div>
+  </div>
+
+  <div class="pages">
+
+    <!-- LICENCIAS -->
+    <div class="page active" id="pageLic">
+      <div class="page-title">Licencias</div>
+
+      <div id="venceBanner" style="display:none" class="vence-banner">
+        <div class="vence-banner-icon">⚠️</div>
+        <div class="vence-banner-txt"><strong id="venceBannerTxt">0 licencias</strong> próximas a vencer en los próximos 7 días</div>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="searchQ" placeholder="Buscar taller, email, código..." oninput="onSearch(this)"/>
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+      </div>
+      <div class="ftabs" id="ftabsEl">
+        <div class="ftab active" data-f="todos" onclick="setF('todos',this)">Todos</div>
+        <div class="ftab" data-f="activo" onclick="setF('activo',this)">Activos</div>
+        <div class="ftab" data-f="por_vencer" onclick="setF('por_vencer',this)">Por vencer</div>
+        <div class="ftab" data-f="vencido" onclick="setF('vencido',this)">Vencidos</div>
+        <div class="ftab" data-f="bloqueado" onclick="setF('bloqueado',this)">Bloqueados</div>
+      </div>
+      <div class="sort-bar">
+        <span id="resultCount" style="color:var(--txt2);font-size:11px;"></span>
+        <select class="sort-sel" id="sortSel" onchange="renderLics()">
+          <option value="vence_asc">Vence pronto ↑</option>
+          <option value="vence_desc">Vence tarde ↓</option>
+          <option value="nombre_az">Nombre A→Z</option>
+          <option value="nombre_za">Nombre Z→A</option>
+        </select>
+      </div>
+      <div id="listaLics">
+        <div class="empty"><div class="empty-icon">⏳</div><div class="empty-txt">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- HISTORIAL -->
+    <div class="page" id="pageHist">
+      <div class="page-title">Historial</div>
+      <div id="listaHist">
+        <div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Sin actividad registrada</div><div class="empty-sub">Los cambios aparecerán aquí</div></div>
+      </div>
+      <button class="btn-cancel" style="margin-top:10px" onclick="limpiarHistorial()">🗑️ Limpiar historial</button>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="page" id="pageCfg">
+      <div class="page-title">Configuración</div>
+
+      <div class="cfg-card">
+        <div class="cfg-title">🔗 Conexión actual</div>
+        <div class="cfg-row"><span class="cfg-lbl">Apps Script</span><span class="cfg-val" id="cfgUrlVal">–</span></div>
+        <div class="cfg-row"><span class="cfg-lbl">App cliente</span><span class="cfg-val" id="cfgAppVal">–</span></div>
+      </div>
+
+      <div class="cfg-card">
+        <div class="cfg-title">✏️ Actualizar conexión</div>
+        <div class="fg"><label>Nueva URL Apps Script</label><input type="url" id="cfgNewUrl" placeholder="https://script.google.com/..."/></div>
+        <div class="fg"><label>Nueva URL App Cliente</label><input type="url" id="cfgNewApp" placeholder="https://usuario.github.io/tallerpro/"/></div>
+        <div class="fg"><label>Nueva contraseña admin</label><input type="password" id="cfgNewPass" placeholder="Dejar vacío = no cambiar"/></div>
+        <button class="btn-save" onclick="guardarCfg()">💾 Guardar cambios</button>
+      </div>
+
+      <div class="cfg-card">
+        <div class="cfg-title">📤 Exportar datos</div>
+        <button class="export-btn" onclick="exportarCSV()">
+          <span class="export-icon">📊</span>CSV — Todas las licencias
+        </button>
+        <button class="export-btn" onclick="exportarCSV('vencidos')">
+          <span class="export-icon">⏰</span>CSV — Solo vencidas / por vencer
+        </button>
+      </div>
+
+      <div class="cfg-card">
+        <div class="cfg-title">⚙️ Preferencias</div>
+        <div class="toggle-row">
+          <span class="toggle-lbl">Alertas de vencimiento</span>
+          <button class="toggle on" id="togAlerta" onclick="togglePref('alerta',this)"></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-lbl">Expandir tarjetas al cargar</span>
+          <button class="toggle" id="togExpand" onclick="togglePref('expand',this)"></button>
+        </div>
+      </div>
+
+      <div class="cfg-card">
+        <button class="btn-cancel" style="margin:0;color:var(--err);border-color:rgba(255,107,107,0.2)" onclick="doLogout()">🚪 Cerrar sesión</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottomnav">
+    <div class="nav-item active" id="nav-lic" onclick="navTo('pageLic','nav-lic')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-lbl">Licencias</span>
+    </div>
+    <div class="nav-item" id="nav-hist" onclick="navTo('pageHist','nav-hist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+      <span class="nav-lbl">Historial</span>
+    </div>
+    <div class="nav-item" id="nav-cfg" onclick="navTo('pageCfg','nav-cfg')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="nav-lbl">Config</span>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="abrirNuevo()" style="display:none">+</button>
+
+<!-- ══ MODAL: Nueva / Editar Licencia ══ -->
+<div class="modal-bg" id="modalLic">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span id="modalLicTitulo">Nueva Licencia</span>
+      <button class="modal-close" onclick="closeModal('modalLic')">✕</button>
+    </div>
+    <div class="fg"><label>Email del cliente *</label><input type="email" id="mEmail" placeholder="cliente@correo.com"/></div>
+    <div class="fg-row">
+      <div class="fg">
+        <label>Contraseña *</label>
+        <input type="text" id="mPass" placeholder="clave2025"/>
+        <div class="fg-hint">Mínimo 6 caracteres</div>
+      </div>
+      <div class="fg"><label>Código *</label><input type="text" id="mCodigo" placeholder="CLI-001"/></div>
+    </div>
+    <div class="fg"><label>Nombre del taller</label><input type="text" id="mTaller" placeholder="Taller Pérez"/></div>
+    <div class="fg"><label>Teléfono WhatsApp / SMS</label><input type="tel" id="mTel" placeholder="+521234567890"/></div>
+    <div class="fg-row">
+      <div class="fg"><label>Plan</label>
+        <select id="mPlan"><option value="mensual">Mensual</option><option value="anual">Anual</option><option value="trimestral">Trimestral</option></select>
+      </div>
+      <div class="fg"><label>Vencimiento *</label><input type="date" id="mVence"/></div>
+    </div>
+    <div class="fg"><label>Estado</label>
+      <select id="mActivo"><option value="si">✅ Activo</option><option value="no">🚫 Bloqueado</option></select>
+    </div>
+    <div class="fg"><label>Notas internas</label><textarea id="mNotas" rows="2" placeholder="Observaciones, historial de pago, etc."></textarea></div>
+    <input type="hidden" id="mEmailOrig"/>
+    <input type="hidden" id="mModo"/>
+    <button class="btn-save" id="btnGuardarLic" onclick="guardarLicencia()">💾 Guardar y Compartir Acceso</button>
+    <button class="btn-cancel" onclick="closeModal('modalLic')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ══ MODAL: Renovar ══ -->
+<div class="modal-bg" id="modalRenovar">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">
+      <span>🔄 Renovar Licencia</span>
+      <button class="modal-close" onclick="closeModal('modalRenovar')">✕</button>
+    </div>
+    <div style="color:var(--txt2);font-size:13px;margin-bottom:16px">
+      Cliente: <strong id="rNombre" style="color:var(--txt)"></strong>
+    </div>
+    <div class="fg"><label>Plan</label>
+      <select id="rPlan"><option value="mensual">Mensual</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option></select>
+    </div>
+    <div class="fg"><label>Nueva fecha de vencimiento</label>
+      <input type="date" id="rFecha"/>
+    </div>
+    <div class="renovar-rapido">
+      <div class="btn-rq" onclick="renovarRapido(1)">+1 Mes</div>
+      <div class="btn-rq" onclick="renovarRapido(3)">+3 Meses</div>
+      <div class="btn-rq" onclick="renovarRapido(12)">+1 Año</div>
+    </div>
+    <button class="btn-save" id="btnConfRenovar" onclick="confirmarRenovar()">✅ Confirmar Renovación</button>
+    <button class="btn-cancel" onclick="closeModal('modalRenovar')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ══ MODAL: Confirmar acción ══ -->
+<div class="modal-bg" id="modalConfirm">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <div class="confirm-titulo" id="confirmTitulo">¿Confirmar acción?</div>
+    <div class="confirm-sub" id="confirmSub">Esta acción no se puede deshacer.</div>
+    <button class="btn-confirm-ok btn-confirm-warn" id="btnConfirmOk">Confirmar</button>
+    <button class="btn-cancel" onclick="closeModal('modalConfirm')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ══ MODAL: Compartir ══ -->
+<div class="modal-bg" id="modalCompartir">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" style="float:right;background:none;border:none;color:var(--txt2);font-size:22px;cursor:pointer;margin-bottom:8px" onclick="closeModal('modalCompartir')">✕</button>
+
+    <div class="comp-header" id="compHeaderNuevo" style="display:none">
+      <div class="comp-check">✓</div>
+      <div class="comp-titulo">¡Licencia Creada!</div>
+      <div class="comp-sub">Notifica al cliente por el canal que prefieras</div>
+    </div>
+    <div class="comp-header" id="compHeaderQR">
+      <div style="font-size:40px;margin-bottom:10px">📲</div>
+      <div class="comp-titulo">Código QR del Sistema</div>
+      <div class="comp-sub">Muéstrale este código a tu cliente para abrir la app</div>
+    </div>
+
+    <div class="qr-wrap">
+      <div id="qrCanvas"></div>
+      <div class="qr-app-label">TallerPro</div>
+      <div class="qr-client-label" id="qrClientLabel">Escanea para abrir el sistema</div>
+    </div>
+
+    <div id="seccionCredenciales" style="display:none">
+      <div class="creds-box">
+        <div class="creds-title">📋 Datos de activación del cliente</div>
+        <div class="cred-row"><span class="cred-lbl">🌐 App</span><span class="cred-val" id="sUrl">–</span></div>
+        <div class="cred-row"><span class="cred-lbl">📧 Usuario</span><span class="cred-val" id="sEmail">–</span></div>
+        <div class="cred-row"><span class="cred-lbl">🔑 Contraseña</span><span class="cred-val" id="sPass">–</span></div>
+        <div class="cred-row"><span class="cred-lbl">📦 Plan</span><span class="cred-val" id="sPlanC">–</span></div>
+        <div class="cred-row"><span class="cred-lbl">📅 Vence</span><span class="cred-val" id="sVenceC">–</span></div>
+      </div>
+
+      <div class="share-titulo">📲 Enviar credenciales por</div>
+      <div class="share-grid">
+        <div class="share-btn s-wa" onclick="compartirWA()"><span class="share-icon">💬</span><span class="share-lbl">WhatsApp</span></div>
+        <div class="share-btn s-email" onclick="compartirEmail()"><span class="share-icon">📧</span><span class="share-lbl">Email</span></div>
+        <div class="share-btn s-sms" onclick="compartirSMS()"><span class="share-icon">📱</span><span class="share-lbl">SMS</span></div>
+        <div class="share-btn s-copy" onclick="copiarAcceso()"><span class="share-icon">📋</span><span class="share-lbl">Copiar</span></div>
+      </div>
+    </div>
+
+    <button class="btn-cancel" onclick="closeModal('modalCompartir')">Cerrar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastBox"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   ESTADO GLOBAL
+══════════════════════════════════════════ */
+let API_URL    = '';
+let ADMIN_PASS = '';
+let APP_URL    = '';
+let licencias  = [];
+let filtroAct  = 'todos';
+let emailRenovando = '';
+let licActual  = {};
+let confirmCallback = null;
+let prefs = {alerta:true, expand:false};
+let historial = [];
+
+/* ══════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════ */
+function doLogin(){
+  const url  = document.getElementById('lUrl').value.trim();
+  const pass = document.getElementById('lPass').value.trim();
+  const app  = document.getElementById('lAppUrl').value.trim();
+  const err  = document.getElementById('lErr');
+  err.textContent = '';
+  if(!url || !pass){ err.textContent = 'Completa URL y contraseña.'; return; }
+  if(!url.includes('script.google.com')){ err.textContent = 'URL de Apps Script inválida.'; return; }
+  API_URL = url; ADMIN_PASS = pass; APP_URL = app;
+  sessionStorage.setItem('tp_url', url);
+  sessionStorage.setItem('tp_pass', pass);
+  sessionStorage.setItem('tp_app', app);
+  mostrarApp();
+}
+
+function doLogout(){
+  mostrarConfirm('🚪','¿Cerrar sesión?','Los datos de conexión se borrarán de esta sesión.','btn-confirm-err','Cerrar sesión', ()=>{
+    sessionStorage.clear();
+    API_URL = ''; ADMIN_PASS = ''; APP_URL = '';
+    licencias = []; historial = [];
+    document.getElementById('appWrap').style.display  = 'none';
+    document.getElementById('loginWrap').style.display = 'flex';
+    document.getElementById('fabBtn').style.display   = 'none';
+    closeModal('modalConfirm');
+  });
+}
+
+window.onload = ()=>{
+  const url  = sessionStorage.getItem('tp_url');
+  const pass = sessionStorage.getItem('tp_pass');
+  const app  = sessionStorage.getItem('tp_app') || '';
+  if(url && pass){ API_URL = url; ADMIN_PASS = pass; APP_URL = app; mostrarApp(); }
+
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  document.getElementById('mVence').value = d.toISOString().slice(0,10);
+
+  // Cargar historial de sessionStorage
+  try{ historial = JSON.parse(sessionStorage.getItem('tp_hist')||'[]'); }catch(e){}
+  renderHistorial();
+
+  // Cargar preferencias
+  try{ prefs = {...prefs,...JSON.parse(localStorage.getItem('tp_prefs')||'{}')}; }catch(e){}
+  syncPrefsUI();
+
+  document.querySelectorAll('.modal-bg').forEach(m=>{
+    m.addEventListener('click', e=>{ if(e.target===m) closeModal(m.id); });
+  });
+};
+
+document.getElementById('lPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+/* ══════════════════════════════════════════
+   APP
+══════════════════════════════════════════ */
+function mostrarApp(){
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display   = 'flex';
+  document.getElementById('fabBtn').style.display    = 'flex';
+  document.getElementById('cfgUrlVal').textContent   = API_URL;
+  document.getElementById('cfgAppVal').textContent   = APP_URL || '(no configurada)';
+  cargarLicencias();
+}
+
+function navTo(pageId, navId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.getElementById(navId).classList.add('active');
+  document.getElementById('fabBtn').style.display = pageId === 'pageLic' ? 'flex' : 'none';
+  if(pageId === 'pageHist') renderHistorial();
+}
+
+/* ══════════════════════════════════════════
+   API  (contraseña va en body POST, no en URL)
+══════════════════════════════════════════ */
+async function apiGet(action, extra={}){
+  // GET solo para read-only, sin credenciales en URL excepto acción pública
+  const qs = new URLSearchParams({action, ...extra}).toString();
+  const res = await fetch(`${API_URL}?${qs}`,{
+    method:'GET',
+    headers:{'X-Admin-Pass': ADMIN_PASS}  // header custom — más seguro que querystring
+  });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return res.json();
+}
+async function apiPost(action, data={}){
+  const res = await fetch(API_URL,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'X-Admin-Pass': ADMIN_PASS   // header, nunca en URL
+    },
+    body: JSON.stringify({action, adminPass: ADMIN_PASS, data})
+  });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return res.json();
+}
+
+/* ══════════════════════════════════════════
+   LICENCIAS
+══════════════════════════════════════════ */
+async function cargarLicencias(){
+  document.getElementById('listaLics').innerHTML =
+    '<div class="empty"><div class="empty-icon">⏳</div><div class="empty-txt">Cargando...</div></div>';
+  try{
+    const r = await apiGet('adminGetLicencias');
+    if(!r.ok){
+      if(r.msg?.includes('autorizado')){ toast('Contraseña incorrecta','err'); doLogout(); return; }
+      throw new Error(r.msg);
+    }
+    licencias = (r.data||[]).map(procesar);
+    actualizarStats();
+    renderLics();
+  }catch(e){
+    toast('Error: '+e.message,'err');
+    document.getElementById('listaLics').innerHTML =
+      '<div class="empty"><div class="empty-icon">❌</div><div class="empty-txt">Error al cargar</div><div class="empty-sub">Verifica URL y contraseña</div></div>';
+  }
+}
+
+function procesar(l){
+  const hoy   = new Date(); hoy.setHours(0,0,0,0);
+  const vRaw  = l.vencimiento || l.vence || '2000-01-01';
+  const vence = new Date(vRaw);
+  const act   = String(l.activo||'').toLowerCase().trim();
+  const bloq  = act==='no' || act==='false' || act==='0';
+  const dias  = Math.ceil((vence-hoy)/(1000*60*60*24));
+  let estado;
+  if(bloq)         estado = 'bloqueado';
+  else if(dias<=0) estado = 'vencido';
+  else if(dias<=7) estado = 'por_vencer';
+  else             estado = 'activo';
+  return{...l, _dias:dias, _estado:estado,
+    _venceFmt: isNaN(vence.getTime()) ? '–' : vence.toLocaleDateString('es-MX')
+  };
+}
+
+function actualizarStats(){
+  const tot = licencias.length;
+  const act = licencias.filter(l=>l._estado==='activo').length;
+  const pv  = licencias.filter(l=>l._estado==='por_vencer').length;
+  const ven = licencias.filter(l=>l._estado==='vencido').length;
+  const blo = licencias.filter(l=>l._estado==='bloqueado').length;
+  document.getElementById('sTot').textContent = tot;
+  document.getElementById('sAct').textContent = act;
+  document.getElementById('sPV').textContent  = pv;
+  document.getElementById('sVen').textContent = ven;
+  document.getElementById('sBlo').textContent = blo;
+  const al = pv + ven;
+  document.getElementById('alertaPill').style.display = al ? '' : 'none';
+  document.getElementById('alertaN').textContent = al;
+  // Banner próximos a vencer
+  if(prefs.alerta && pv > 0){
+    document.getElementById('venceBanner').style.display = '';
+    document.getElementById('venceBannerTxt').textContent = `${pv} licencia${pv>1?'s':''}`;
+  } else {
+    document.getElementById('venceBanner').style.display = 'none';
+  }
+}
+
+function renderLics(){
+  const q   = document.getElementById('searchQ').value.toLowerCase();
+  const ord = document.getElementById('sortSel').value;
+  let arr   = [...licencias];
+  if(filtroAct !== 'todos') arr = arr.filter(l=>l._estado===filtroAct);
+  if(q) arr = arr.filter(l=>
+    (l.email||'').toLowerCase().includes(q) ||
+    (l.codigo||'').toLowerCase().includes(q) ||
+    (l.nombre_taller||'').toLowerCase().includes(q) ||
+    (l.telefono||'').includes(q)
+  );
+  // Ordenamiento
+  arr.sort((a,b)=>{
+    if(ord==='vence_asc')  return a._dias - b._dias;
+    if(ord==='vence_desc') return b._dias - a._dias;
+    if(ord==='nombre_az')  return (a.nombre_taller||a.email||'').localeCompare(b.nombre_taller||b.email||'');
+    if(ord==='nombre_za')  return (b.nombre_taller||b.email||'').localeCompare(a.nombre_taller||a.email||'');
+    return 0;
+  });
+
+  document.getElementById('resultCount').textContent = `${arr.length} resultado${arr.length!==1?'s':''}`;
+
+  const el = document.getElementById('listaLics');
+  if(!arr.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div class="empty-txt">Sin resultados</div><div class="empty-sub">Prueba otro filtro o búsqueda</div></div>';
+    return;
+  }
+
+  const badgeMap = {
+    activo:     '<span class="badge b-ok">● Activo</span>',
+    por_vencer: '<span class="badge b-warn">⚠ Por vencer</span>',
+    vencido:    '<span class="badge b-err">✕ Vencido</span>',
+    bloqueado:  '<span class="badge b-err">🚫 Bloqueado</span>'
+  };
+  const avClass = {activo:'av-ok', por_vencer:'av-warn', vencido:'av-err', bloqueado:'av-bloq'};
+
+  el.innerHTML = arr.map(l=>{
+    const ini  = (l.nombre_taller||l.email||'?').charAt(0).toUpperCase();
+    const uid  = l.email.replace(/[@.]/g,'_');
+    const critico = l._estado==='vencido' ? 'critico' : (l._estado==='por_vencer'?'warning':'');
+    const btnBloq = l._estado==='bloqueado'
+      ? `<button class="btn-acc activar" onclick="pedirToggleBloq('${l.email}','si')">✅ Activar</button>`
+      : `<button class="btn-acc bloquear" onclick="pedirToggleBloq('${l.email}','no')">🚫 Bloquear</button>`;
+    const diasLabel = l._estado==='por_vencer'
+      ? `<div class="lic-dias" style="color:var(--err)">${l._dias}d restantes</div>`
+      : l._estado==='activo' && l._dias<=30
+      ? `<div class="lic-dias" style="color:var(--warn)">${l._dias}d restantes</div>`
+      : l._estado==='vencido'
+      ? `<div class="lic-dias" style="color:var(--err)">Vencida</div>` : '';
+    const openClass = prefs.expand ? 'open' : '';
+    return `
+    <div class="lic-item ${critico} ${openClass}" id="li-${uid}">
+      <div class="lic-header" onclick="toggleItem('${uid}')">
+        <div class="lic-avatar ${avClass[l._estado]||'av-ok'}">${ini}</div>
+        <div class="lic-info">
+          <div class="lic-nombre">${l.nombre_taller||'Sin nombre'}</div>
+          <div class="lic-email">${l.email||'–'}</div>
+        </div>
+        <div class="lic-right">${badgeMap[l._estado]||''}${diasLabel}</div>
+      </div>
+      <div class="lic-body">
+        <div class="lic-meta">
+          <div class="meta-item"><div class="meta-lbl">Código</div><div class="meta-val">${l.codigo||'–'}</div></div>
+          <div class="meta-item"><div class="meta-lbl">Plan</div><div class="meta-val">${l.plan||'–'}</div></div>
+          <div class="meta-item"><div class="meta-lbl">Vence</div><div class="meta-val">${l._venceFmt}</div></div>
+          <div class="meta-item"><div class="meta-lbl">Teléfono</div><div class="meta-val">${l.telefono||'–'}</div></div>
+        </div>
+        ${l.notas?`<div style="background:var(--bg2);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--txt2);margin-bottom:12px;line-height:1.5">📝 ${l.notas}</div>`:''}
+        <div class="acciones-grid">
+          <button class="btn-acc renovar"   onclick="abrirRenovar('${l.email}','${(l.nombre_taller||l.email).replace(/'/g,"\\'")}')">🔄 Renovar</button>
+          <button class="btn-acc editar"    onclick="abrirEditar('${l.email}')">✏️ Editar</button>
+          ${btnBloq}
+          <button class="btn-acc compartir" onclick="abrirCompartir('${l.email}')">📲 Compartir</button>
+          <button class="btn-acc eliminar"  onclick="pedirEliminar('${l.email}')">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleItem(uid){
+  const el = document.getElementById('li-'+uid);
+  if(el) el.classList.toggle('open');
+}
+
+function setF(f, el){
+  filtroAct = f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  if(el){ el.classList.add('active'); }
+  else {
+    const tab = document.querySelector(`.ftab[data-f="${f}"]`);
+    if(tab){ tab.classList.add('active'); navTo('pageLic','nav-lic'); }
+  }
+  renderLics();
+}
+
+function onSearch(inp){
+  document.getElementById('searchClear').style.display = inp.value ? 'block' : 'none';
+  renderLics();
+}
+function clearSearch(){
+  document.getElementById('searchQ').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  renderLics();
+}
+
+/* ══════════════════════════════════════════
+   NUEVA / EDITAR LICENCIA
+══════════════════════════════════════════ */
+function abrirNuevo(){
+  document.getElementById('modalLicTitulo').textContent = '+ Nueva Licencia';
+  ['mEmail','mPass','mCodigo','mTaller','mTel','mNotas'].forEach(id=> document.getElementById(id).value='');
+  document.getElementById('mPlan').value   = 'mensual';
+  document.getElementById('mActivo').value = 'si';
+  document.getElementById('mEmailOrig').value = '';
+  document.getElementById('mModo').value   = 'nuevo';
+  document.getElementById('btnGuardarLic').textContent = '💾 Guardar y Compartir Acceso';
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  document.getElementById('mVence').value = d.toISOString().slice(0,10);
+  openModal('modalLic');
+}
+
+function abrirEditar(email){
+  const l = licencias.find(x=>x.email===email);
+  if(!l) return;
+  document.getElementById('modalLicTitulo').textContent = '✏️ Editar Licencia';
+  document.getElementById('mEmail').value  = l.email||'';
+  document.getElementById('mPass').value   = l.password||'';
+  document.getElementById('mCodigo').value = l.codigo||'';
+  document.getElementById('mTaller').value = l.nombre_taller||'';
+  document.getElementById('mTel').value    = l.telefono||'';
+  document.getElementById('mPlan').value   = l.plan||'mensual';
+  document.getElementById('mNotas').value  = l.notas||'';
+  document.getElementById('mActivo').value = (['no','false','0'].includes(String(l.activo||'').toLowerCase())) ? 'no' : 'si';
+  document.getElementById('mEmailOrig').value = l.email;
+  document.getElementById('mModo').value   = 'editar';
+  document.getElementById('btnGuardarLic').textContent = '💾 Guardar Cambios';
+  const vRaw = l.vencimiento||l.vence||'';
+  if(vRaw){ try{ document.getElementById('mVence').value = new Date(vRaw).toISOString().slice(0,10); }catch(e){} }
+  openModal('modalLic');
+}
+
+async function guardarLicencia(){
+  const modo      = document.getElementById('mModo').value;
+  const emailOrig = document.getElementById('mEmailOrig').value;
+  const data = {
+    email:        document.getElementById('mEmail').value.trim(),
+    password:     document.getElementById('mPass').value.trim(),
+    codigo:       document.getElementById('mCodigo').value.trim(),
+    nombreTaller: document.getElementById('mTaller').value.trim(),
+    telefono:     document.getElementById('mTel').value.trim(),
+    plan:         document.getElementById('mPlan').value,
+    vencimiento:  document.getElementById('mVence').value,
+    activo:       document.getElementById('mActivo').value,
+    notas:        document.getElementById('mNotas').value.trim()
+  };
+  if(!data.email||!data.password||!data.codigo||!data.vencimiento){
+    toast('Completa los campos obligatorios (*)','err'); return;
+  }
+  if(data.password.length < 6){ toast('La contraseña debe tener mínimo 6 caracteres','err'); return; }
+  const btn = document.getElementById('btnGuardarLic');
+  btn.innerHTML = '<span class="loader"></span> Guardando...';
+  btn.disabled  = true;
+  try{
+    let r;
+    if(modo === 'editar'){ data.email = emailOrig; r = await apiPost('adminUpdateLicencia', data); }
+    else { r = await apiPost('adminAddLicencia', data); }
+    if(r.ok){
+      registrarHistorial(modo==='nuevo'?'nueva':'edicion', data.email, data.nombreTaller||data.email, modo==='nuevo'?'Licencia creada':'Licencia editada');
+      closeModal('modalLic');
+      await cargarLicencias();
+      licActual = {...data};
+      if(modo === 'nuevo'){ abrirCompartirDatos(licActual, 'registrado'); }
+      else { toast('Licencia actualizada ✓','ok'); }
+    } else { toast(r.msg||'Error al guardar','err'); }
+  }catch(e){ toast('Error: '+e.message,'err'); }
+  btn.innerHTML = modo==='nuevo' ? '💾 Guardar y Compartir Acceso' : '💾 Guardar Cambios';
+  btn.disabled  = false;
+}
+
+/* ══════════════════════════════════════════
+   COMPARTIR
+══════════════════════════════════════════ */
+function abrirCompartir(email){
+  const l = licencias.find(x=>x.email===email);
+  if(!l) return;
+  abrirCompartirDatos({
+    email: l.email, password: l.password||'(ver sheet)',
+    plan: l.plan, vencimiento: l.vencimiento||l.vence,
+    nombreTaller: l.nombre_taller, telefono: l.telefono||''
+  },'registrado');
+}
+
+function abrirCompartirDatos(d, modo){
+  licActual = d || {};
+  const appUrl = APP_URL || 'https://tu-app.github.io/tallerpro/';
+  const qrEl   = document.getElementById('qrCanvas');
+  qrEl.innerHTML = '';
+  try{
+    new QRCode(qrEl,{ text:appUrl, width:180, height:180, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
+  }catch(e){
+    qrEl.innerHTML = `<div style="color:#999;font-size:10px;padding:20px;text-align:center">${appUrl}</div>`;
+  }
+  if(modo === 'qr_solo'){
+    document.getElementById('compHeaderNuevo').style.display     = 'none';
+    document.getElementById('compHeaderQR').style.display        = 'block';
+    document.getElementById('seccionCredenciales').style.display = 'none';
+    document.getElementById('qrClientLabel').textContent         = 'Escanea para abrir el sistema';
+  } else {
+    const venceFmt = d.vencimiento
+      ? (()=>{ try{ return new Date(d.vencimiento).toLocaleDateString('es-MX'); }catch(e){ return d.vencimiento; }})()
+      : '–';
+    document.getElementById('compHeaderNuevo').style.display     = 'block';
+    document.getElementById('compHeaderQR').style.display        = 'none';
+    document.getElementById('seccionCredenciales').style.display = 'block';
+    document.getElementById('qrClientLabel').textContent = d.nombreTaller ? 'Acceso para: '+d.nombreTaller : 'Escanea para abrir el sistema';
+    document.getElementById('sUrl').textContent    = appUrl;
+    document.getElementById('sEmail').textContent  = d.email||'–';
+    document.getElementById('sPass').textContent   = d.password||'–';
+    document.getElementById('sPlanC').textContent  = d.plan||'–';
+    document.getElementById('sVenceC').textContent = venceFmt;
+  }
+  openModal('modalCompartir');
+}
+
+function getMensaje(){
+  const appUrl   = APP_URL || 'https://tu-app.github.io/tallerpro/';
+  const venceFmt = licActual.vencimiento
+    ? (()=>{ try{ return new Date(licActual.vencimiento).toLocaleDateString('es-MX'); }catch(e){ return licActual.vencimiento; }})()
+    : '–';
+  return `🔧 *TallerPro* — Datos de Activación\n\n`+
+    `Hola${licActual.nombreTaller?' *'+licActual.nombreTaller+'*':''}!\n\n`+
+    `Tu acceso al sistema de gestión de taller ha sido activado.\n\n`+
+    `📋 *DATOS DE ACCESO:*\n`+
+    `🌐 App: ${appUrl}\n`+
+    `📧 Usuario: ${licActual.email}\n`+
+    `🔑 Contraseña: ${licActual.password}\n`+
+    `📦 Plan: ${licActual.plan}\n`+
+    `📅 Vence: ${venceFmt}\n\n`+
+    `*Pasos para empezar:*\n`+
+    `1️⃣ Abre la app en tu celular\n`+
+    `2️⃣ Inicia sesión con tus datos\n`+
+    `3️⃣ Toca "Crear mi Hoja de Datos"\n`+
+    `4️⃣ ¡Listo para gestionar tu taller! 💪`;
+}
+
+function compartirWA(){
+  const tel = (licActual.telefono||'').replace(/\D/g,'');
+  const msg = encodeURIComponent(getMensaje());
+  window.open(tel ? `https://wa.me/${tel}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank');
+}
+function compartirEmail(){
+  const appUrl   = APP_URL || 'https://tu-app.github.io/tallerpro/';
+  const venceFmt = licActual.vencimiento
+    ? (()=>{ try{ return new Date(licActual.vencimiento).toLocaleDateString('es-MX'); }catch(e){ return licActual.vencimiento; }})()
+    : '–';
+  const sub  = encodeURIComponent('TallerPro — Tus datos de acceso');
+  const body = encodeURIComponent(
+    `Hola${licActual.nombreTaller?' '+licActual.nombreTaller:''},\n\n`+
+    `Tu cuenta en TallerPro ha sido activada.\n\n`+
+    `App: ${appUrl}\nUsuario: ${licActual.email}\nContraseña: ${licActual.password}\nPlan: ${licActual.plan}\nVencimiento: ${venceFmt}\n\n`+
+    `Cómo empezar:\n1. Abre la app\n2. Inicia sesión\n3. Toca "Crear mi Hoja de Datos"\n\nSaludos, TallerPro`
+  );
+  window.open(`mailto:${licActual.email||''}?subject=${sub}&body=${body}`);
+}
+function compartirSMS(){
+  const appUrl = APP_URL || 'https://tu-app.github.io/tallerpro/';
+  const msg    = encodeURIComponent(`TallerPro: Tu acceso está listo.\nApp: ${appUrl}\nUsuario: ${licActual.email}\nClave: ${licActual.password}`);
+  const tel    = (licActual.telefono||'').replace(/\D/g,'');
+  window.open(tel ? `sms:${tel}?body=${msg}` : `sms:?body=${msg}`);
+}
+function copiarAcceso(){
+  const texto = getMensaje().replace(/\*/g,'');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(texto).then(()=>toast('Copiado al portapapeles ✓','ok')).catch(fallbackCopy);
+  } else { fallbackCopy(); }
+  function fallbackCopy(){
+    const ta = document.createElement('textarea');
+    ta.value = texto; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Copiado ✓','ok');
+  }
+}
+
+/* ══════════════════════════════════════════
+   RENOVAR
+══════════════════════════════════════════ */
+function abrirRenovar(email, nombre){
+  emailRenovando = email;
+  const l = licencias.find(x=>x.email===email);
+  document.getElementById('rNombre').textContent = nombre;
+  document.getElementById('rPlan').value = l?.plan || 'mensual';
+  const base = (l && l._dias > 0) ? new Date(l.vencimiento||l.vence) : new Date();
+  try{ document.getElementById('rFecha').value = base.toISOString().slice(0,10); }catch(e){}
+  openModal('modalRenovar');
+}
+
+function renovarRapido(meses){
+  const base = new Date(document.getElementById('rFecha').value || Date.now());
+  base.setMonth(base.getMonth()+meses);
+  document.getElementById('rFecha').value = base.toISOString().slice(0,10);
+}
+
+async function confirmarRenovar(){
+  const fecha = document.getElementById('rFecha').value;
+  const plan  = document.getElementById('rPlan').value;
+  if(!fecha){ toast('Selecciona una fecha','err'); return; }
+  const btn = document.getElementById('btnConfRenovar');
+  btn.innerHTML = '<span class="loader"></span> Renovando...';
+  btn.disabled  = true;
+  try{
+    const r = await apiPost('adminUpdateLicencia', {email:emailRenovando, vencimiento:fecha, plan, activo:'si'});
+    if(r.ok){
+      const l = licencias.find(x=>x.email===emailRenovando);
+      registrarHistorial('renovacion', emailRenovando, l?.nombre_taller||emailRenovando, `Renovado hasta ${new Date(fecha).toLocaleDateString('es-MX')}`);
+      toast('Licencia renovada ✓','ok');
+      closeModal('modalRenovar');
+      await cargarLicencias();
+    } else { toast(r.msg||'Error','err'); }
+  }catch(e){ toast('Error: '+e.message,'err'); }
+  btn.innerHTML = '✅ Confirmar Renovación';
+  btn.disabled  = false;
+}
+
+/* ══════════════════════════════════════════
+   BLOQUEAR / ACTIVAR
+══════════════════════════════════════════ */
+function pedirToggleBloq(email, nuevoEstado){
+  const accion = nuevoEstado==='no' ? 'bloquear' : 'activar';
+  const l = licencias.find(x=>x.email===email);
+  const nombre = l?.nombre_taller || email;
+  mostrarConfirm(
+    nuevoEstado==='no'?'🚫':'✅',
+    nuevoEstado==='no'?`¿Bloquear a ${nombre}?`:`¿Activar a ${nombre}?`,
+    nuevoEstado==='no'?'El cliente no podrá acceder a la app.':'El cliente recuperará acceso inmediatamente.',
+    nuevoEstado==='no'?'btn-confirm-err':'btn-confirm-warn',
+    nuevoEstado==='no'?'Sí, bloquear':'Sí, activar',
+    ()=>{ closeModal('modalConfirm'); toggleBloq(email, nuevoEstado); }
+  );
+}
+
+async function toggleBloq(email, nuevoEstado){
+  try{
+    const r = await apiPost('adminUpdateLicencia', {email, activo:nuevoEstado});
+    if(r.ok){
+      const l = licencias.find(x=>x.email===email);
+      registrarHistorial(nuevoEstado==='no'?'bloqueo':'activacion', email, l?.nombre_taller||email,
+        nuevoEstado==='no'?'Licencia bloqueada':'Licencia activada');
+      toast(nuevoEstado==='no'?'🚫 Licencia bloqueada':'✅ Licencia activada','ok');
+      await cargarLicencias();
+    } else { toast(r.msg||'Error','err'); }
+  }catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+/* ══════════════════════════════════════════
+   ELIMINAR
+══════════════════════════════════════════ */
+function pedirEliminar(email){
+  const l = licencias.find(x=>x.email===email);
+  mostrarConfirm('🗑️',`¿Eliminar a ${l?.nombre_taller||email}?`,
+    'Esta acción es permanente y no se puede deshacer.',
+    'btn-confirm-err','Sí, eliminar permanentemente',
+    ()=>{ closeModal('modalConfirm'); eliminarLicencia(email); }
+  );
+}
+
+async function eliminarLicencia(email){
+  try{
+    const r = await apiPost('adminDeleteLicencia', {email});
+    if(r.ok){
+      const l = licencias.find(x=>x.email===email);
+      registrarHistorial('eliminacion', email, l?.nombre_taller||email, 'Licencia eliminada');
+      toast('Licencia eliminada ✓','ok');
+      await cargarLicencias();
+    } else { toast(r.msg||'Error al eliminar','err'); }
+  }catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+/* ══════════════════════════════════════════
+   EXPORTAR CSV
+══════════════════════════════════════════ */
+function exportarCSV(filtro='todos'){
+  let arr = filtro==='vencidos'
+    ? licencias.filter(l=>l._estado==='vencido'||l._estado==='por_vencer')
+    : licencias;
+  if(!arr.length){ toast('No hay datos para exportar','warn'); return; }
+  const cols = ['email','nombre_taller','codigo','plan','vencimiento','activo','telefono','notas','_estado'];
+  const header = cols.join(',');
+  const rows = arr.map(l=>cols.map(c=>`"${String(l[c]||'').replace(/"/g,'""')}"`).join(','));
+  const csv  = [header,...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `tallerpro_licencias_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('CSV exportado ✓','ok');
+}
+
+/* ══════════════════════════════════════════
+   HISTORIAL
+══════════════════════════════════════════ */
+const iconosHist = {
+  nueva:'🆕', edicion:'✏️', renovacion:'🔄', bloqueo:'🚫',
+  activacion:'✅', eliminacion:'🗑️', compartir:'📲'
+};
+const coloresHist = {
+  nueva:'var(--ok)', edicion:'var(--p2)', renovacion:'var(--info)',
+  bloqueo:'var(--err)', activacion:'var(--ok)', eliminacion:'var(--err)', compartir:'var(--warn)'
+};
+
+function registrarHistorial(tipo, email, nombre, detalle){
+  historial.unshift({tipo, email, nombre, detalle, ts: new Date().toISOString()});
+  if(historial.length > 100) historial.pop();
+  try{ sessionStorage.setItem('tp_hist', JSON.stringify(historial)); }catch(e){}
+}
+
+function renderHistorial(){
+  const el = document.getElementById('listaHist');
+  if(!historial.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Sin actividad</div><div class="empty-sub">Los cambios aparecerán aquí</div></div>';
+    return;
+  }
+  const bg = `background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:14px;`;
+  el.innerHTML = `<div style="${bg}">`+historial.slice(0,50).map(h=>{
+    const fecha = new Date(h.ts).toLocaleString('es-MX',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div class="hist-item">
+      <div class="hist-dot" style="background:${coloresHist[h.tipo]||'var(--txt2)'}"></div>
+      <div class="hist-txt"><strong>${iconosHist[h.tipo]||'•'} ${h.nombre}</strong> — ${h.detalle}<br/><span style="font-size:10px;color:var(--txt2)">${h.email}</span></div>
+      <div class="hist-time">${fecha}</div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+function limpiarHistorial(){
+  mostrarConfirm('🗑️','¿Limpiar historial?','Se borrará el registro de actividad de esta sesión.','btn-confirm-err','Limpiar',()=>{
+    historial = [];
+    sessionStorage.removeItem('tp_hist');
+    renderHistorial();
+    closeModal('modalConfirm');
+    toast('Historial limpiado','ok');
+  });
+}
+
+/* ══════════════════════════════════════════
+   PREFERENCIAS
+══════════════════════════════════════════ */
+function togglePref(key, btn){
+  prefs[key] = !prefs[key];
+  btn.classList.toggle('on', prefs[key]);
+  try{ localStorage.setItem('tp_prefs', JSON.stringify(prefs)); }catch(e){}
+  if(key === 'alerta') actualizarStats();
+  if(key === 'expand') renderLics();
+}
+function syncPrefsUI(){
+  document.getElementById('togAlerta').classList.toggle('on', prefs.alerta);
+  document.getElementById('togExpand').classList.toggle('on', prefs.expand);
+}
+
+/* ══════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════ */
+function guardarCfg(){
+  const nu = document.getElementById('cfgNewUrl').value.trim();
+  const na = document.getElementById('cfgNewApp').value.trim();
+  const np = document.getElementById('cfgNewPass').value.trim();
+  if(nu){ API_URL = nu; sessionStorage.setItem('tp_url', nu); }
+  if(na){ APP_URL = na; sessionStorage.setItem('tp_app', na); }
+  if(np){ ADMIN_PASS = np; sessionStorage.setItem('tp_pass', np); }
+  document.getElementById('cfgUrlVal').textContent = API_URL;
+  document.getElementById('cfgAppVal').textContent = APP_URL||'(no configurada)';
+  toast('Configuración guardada ✓','ok');
+}
+
+/* ══════════════════════════════════════════
+   MODAL CONFIRMAR (reemplaza confirm())
+══════════════════════════════════════════ */
+function mostrarConfirm(icono, titulo, sub, btnClass, btnTxt, cb){
+  document.getElementById('confirmIcon').textContent  = icono;
+  document.getElementById('confirmTitulo').textContent = titulo;
+  document.getElementById('confirmSub').textContent   = sub;
+  const btn = document.getElementById('btnConfirmOk');
+  btn.textContent  = btnTxt;
+  btn.className    = `btn-confirm-ok ${btnClass}`;
+  confirmCallback  = cb;
+  btn.onclick      = ()=>{ if(confirmCallback) confirmCallback(); };
+  openModal('modalConfirm');
+}
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function openModal(id){  document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function toast(msg, type='info'){
+  const t = document.createElement('div');
+  t.className = `toast t-${type}`;
+  t.textContent = msg;
+  document.getElementById('toastBox').appendChild(t);
+  setTimeout(()=>t.remove(), 3200);
+}
+</script>
+</body>
+</html>
