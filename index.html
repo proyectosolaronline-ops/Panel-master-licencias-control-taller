@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Test Real — Sheet Licencias SaludPro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --p:#1A7FC1;--p2:#38BDF8;
+  --bg:#080D14;--bg2:#0D1520;
+  --card:#111D2B;--card2:#162233;
+  --border:#1E3045;
+  --txt:#E8F0F8;--txt2:#7A9BB8;--txt3:#4A6A85;
+  --ff:'DM Sans',sans-serif;--fm:'DM Mono',monospace;
+  --r:12px;--rs:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--txt);min-height:100vh;padding:20px}
+.topbar{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;display:flex;align-items:center;gap:10px;margin-bottom:20px;max-width:900px;margin-left:auto;margin-right:auto}
+.tb-logo{font-size:15px;font-weight:700;color:var(--p)}
+.tb-logo span{color:var(--p2)}
+.tb-badge{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:#c4b5fd;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.tb-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn-reload{padding:6px 14px;border-radius:var(--rs);font-size:12px;font-weight:600;background:var(--p);color:#fff;border:none;cursor:pointer}
+.btn-reload:hover{background:#1570A8}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;max-width:900px;margin-left:auto;margin-right:auto}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}
+.st-num{font-size:1.5rem;font-weight:800;color:var(--txt);line-height:1}
+.st-lbl{font-size:10px;color:var(--txt3);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;max-width:900px;margin-left:auto;margin-right:auto}
+.search-input{flex:1;min-width:180px;background:var(--card);border:1px solid var(--border);color:var(--txt);padding:9px 13px;border-radius:var(--rs);font-family:var(--ff);font-size:13px;outline:none}
+.search-input:focus{border-color:var(--p)}
+.filter-select{background:var(--card);border:1px solid var(--border);color:var(--txt);padding:9px 12px;border-radius:var(--rs);font-family:var(--ff);font-size:12px;outline:none;cursor:pointer}
+.filter-select option{background:var(--card2)}
+.table-wrap{max-width:900px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.table-hdr{display:grid;grid-template-columns:2fr 2fr 1fr 1fr 1fr 1fr 80px;gap:0;background:var(--p);padding:10px 14px}
+.th{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.05em}
+.table-row{display:grid;grid-template-columns:2fr 2fr 1fr 1fr 1fr 1fr 80px;gap:0;padding:11px 14px;border-bottom:1px solid rgba(30,48,69,.6);align-items:center;cursor:pointer;transition:.15s}
+.table-row:last-child{border-bottom:none}
+.table-row:hover{background:rgba(26,127,193,.06)}
+.td{font-size:12px;color:var(--txt);padding-right:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-mono{font-family:var(--fm);font-size:11px;color:var(--p2)}
+.td-pass{font-family:var(--fm);font-size:11px;color:#FCD34D}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;white-space:nowrap}
+.badge-ok{background:rgba(22,163,74,.12);color:#4ADE80;border:1px solid rgba(22,163,74,.25)}
+.badge-off{background:rgba(220,38,38,.1);color:#FCA5A5;border:1px solid rgba(220,38,38,.25)}
+.badge-trial{background:rgba(245,158,11,.1);color:#FCD34D;border:1px solid rgba(245,158,11,.25)}
+.badge-pro{background:rgba(26,127,193,.12);color:var(--p2);border:1px solid rgba(26,127,193,.25)}
+.badge-bas{background:rgba(100,116,139,.12);color:#94a3b8;border:1px solid rgba(100,116,139,.25)}
+.vence-ok{color:#4ADE80;font-size:11px}
+.vence-warn{color:#FCD34D;font-size:11px}
+.vence-exp{color:#FCA5A5;font-size:11px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.on{opacity:1;pointer-events:all}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;overflow:hidden;transform:scale(.95);transition:transform .25s}
+.modal-overlay.on .modal{transform:scale(1)}
+.modal-hdr{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-hdr h3{font-size:14px;font-weight:700;color:var(--txt)}
+.btn-close{background:rgba(255,255,255,.08);border:none;color:var(--txt2);font-size:14px;cursor:pointer;padding:5px 9px;border-radius:6px}
+.modal-body{padding:18px;max-height:60vh;overflow-y:auto}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(30,48,69,.5);font-size:13px}
+.info-row:last-child{border:none}
+.ik{color:var(--txt3);font-size:11px}
+.iv{color:var(--txt);font-weight:600;text-align:right;font-size:12px;max-width:60%;overflow:hidden;text-overflow:ellipsis}
+.iv.mono{font-family:var(--fm);color:var(--p2)}
+.iv.pass{font-family:var(--fm);color:#FCD34D}
+.modal-footer{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+.btn-wa{padding:9px 16px;border-radius:var(--rs);font-size:12px;font-weight:600;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;cursor:pointer;flex:1;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn-wa:hover{background:#bbf7d0}
+.btn-mail{padding:9px 16px;border-radius:var(--rs);font-size:12px;font-weight:600;background:#e0f2fe;color:#075985;border:1px solid #bae6fd;cursor:pointer;display:flex;align-items:center;gap:5px}
+.btn-mail:hover{background:#bae6fd}
+.btn-land{padding:9px 16px;border-radius:var(--rs);font-size:12px;font-weight:600;background:rgba(26,127,193,.12);color:var(--p2);border:1px solid rgba(26,127,193,.25);cursor:pointer;display:flex;align-items:center;gap:5px}
+.btn-land:hover{background:rgba(26,127,193,.2)}
+.loading{text-align:center;padding:48px 20px;color:var(--txt3)}
+.loading-ico{font-size:32px;margin-bottom:12px;animation:spin 1.2s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 20px;color:var(--txt3)}
+.conn-status{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600}
+.conn-ok{background:rgba(22,163,74,.12);color:#4ADE80;border:1px solid rgba(22,163,74,.25)}
+.conn-err{background:rgba(220,38,38,.1);color:#FCA5A5;border:1px solid rgba(220,38,38,.25)}
+.conn-loading{background:rgba(245,158,11,.1);color:#FCD34D;border:1px solid rgba(245,158,11,.25)}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);color:var(--txt);padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:9000;transition:transform .3s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:rgba(22,163,74,.4);color:#4ADE80}
+#toast.err{border-color:rgba(220,38,38,.4);color:#FCA5A5}
+@media(max-width:680px){
+  .table-hdr,.table-row{grid-template-columns:2fr 1.5fr 1fr 1fr 60px}
+  .th:nth-child(3),.th:nth-child(5){display:none}
+  .td:nth-child(3),.td:nth-child(5){display:none}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .stats-row .stat-card:nth-child(4),.stats-row .stat-card:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-logo">Salud<span>Pro</span></div>
+  <div class="tb-badge">🪪 Licencias — Datos Reales</div>
+  <div class="tb-right">
+    <span class="conn-status conn-loading" id="conn-status">⏳ Conectando…</span>
+    <button class="btn-reload" onclick="cargarDatos()">🔄 Recargar</button>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="st-num" id="s-total">—</div><div class="st-lbl">Total</div></div>
+  <div class="stat-card"><div class="st-num" id="s-activos" style="color:#4ADE80">—</div><div class="st-lbl">Activos</div></div>
+  <div class="stat-card"><div class="st-num" id="s-inactivos" style="color:#FCA5A5">—</div><div class="st-lbl">Inactivos</div></div>
+  <div class="stat-card"><div class="st-num" id="s-trial" style="color:#FCD34D">—</div><div class="st-lbl">Trial</div></div>
+  <div class="stat-card"><div class="st-num" id="s-vencidos" style="color:#fb923c">—</div><div class="st-lbl">Vencidos</div></div>
+</div>
+
+<div class="filtros">
+  <input class="search-input" id="filtro-txt" placeholder="🔍 Buscar nombre, email, slug..." oninput="filtrar()"/>
+  <select class="filter-select" id="filtro-plan" onchange="filtrar()">
+    <option value="">Todos los planes</option>
+    <option value="trial">Trial</option>
+    <option value="basico">Básico</option>
+    <option value="profesional">Profesional</option>
+    <option value="enterprise">Enterprise</option>
+  </select>
+  <select class="filter-select" id="filtro-activo" onchange="filtrar()">
+    <option value="">Todos los estados</option>
+    <option value="1">Activos</option>
+    <option value="0">Inactivos</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+  <div class="table-hdr">
+    <span class="th">Nombre / Slug</span>
+    <span class="th">Email</span>
+    <span class="th">Especialidad</span>
+    <span class="th">Plan</span>
+    <span class="th">Vence</span>
+    <span class="th">Estado</span>
+    <span class="th" style="text-align:center">Acciones</span>
+  </div>
+  <div id="tabla-body">
+    <div class="loading"><div class="loading-ico">⏳</div><p>Cargando datos reales…</p></div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal-det">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="modal-nombre">Detalle de licencia</h3>
+      <button class="btn-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-wa"   id="btn-m-wa">💬 WhatsApp</button>
+      <button class="btn-mail" id="btn-m-mail">✉️ Correo</button>
+      <button class="btn-land" id="btn-m-land">🌐 Landing</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var GAS_URL      = "https://script.google.com/macros/s/AKfycbwu7VVHC3RgS1fXwOtnh3ebHf4Md9xVmYF8cVZznKekPVEDj79izRcQmECYPH4GLIsG/exec";
+var ADMIN_SECRET = "sp3_SaludPro2025_Admin_Secret_Key";
+var BASE_URL     = "https://proyectosolaronline-ops.github.io/Citas-Pro-Salud";
+
+var TODOS = [];
+var FILTERED = [];
+
+var ESP_MAP = {
+  medico:"Medicina General", dentista:"Odontología",
+  psicologo:"Psicología", quiropractico:"Quiropráctica",
+  nutriologo:"Nutriología", otro:"Otra"
+};
+
+// ── CARGA REAL ──────────────────────────────────
+async function cargarDatos(){
+  setStatus("loading");
+  document.getElementById("tabla-body").innerHTML =
+    '<div class="loading"><div class="loading-ico">⏳</div><p>Conectando al GAS…</p></div>';
+
+  try{
+    var r = await fetch(GAS_URL+"?action=adminListTenants&admin_secret="+encodeURIComponent(ADMIN_SECRET),{redirect:"follow"});
+    var data = await r.json();
+
+    if(!data.ok){
+      setStatus("err");
+      document.getElementById("tabla-body").innerHTML =
+        '<div class="empty">❌ '+(data.msg||"Error del servidor")+'</div>';
+      toast("❌ "+(data.msg||"Error"),"err");
+      return;
+    }
+
+    TODOS = data.data || [];
+    FILTERED = [...TODOS];
+    setStatus("ok", TODOS.length+" médicos");
+    renderStats(TODOS);
+    renderTabla(TODOS);
+    toast("✅ "+TODOS.length+" médicos cargados","ok");
+
+  }catch(e){
+    setStatus("err");
+    document.getElementById("tabla-body").innerHTML =
+      '<div class="empty">❌ Sin conexión: '+e.message+'</div>';
+    toast("❌ Error de conexión","err");
+  }
+}
+
+// ── STATS ───────────────────────────────────────
+function renderStats(data){
+  var hoy = new Date();
+  document.getElementById("s-total").textContent    = data.length;
+  document.getElementById("s-activos").textContent  = data.filter(function(m){return m.activo}).length;
+  document.getElementById("s-inactivos").textContent= data.filter(function(m){return !m.activo}).length;
+  document.getElementById("s-trial").textContent    = data.filter(function(m){return m.plan==="trial"}).length;
+  document.getElementById("s-vencidos").textContent = data.filter(function(m){return m.vence && new Date(m.vence)<hoy}).length;
+}
+
+// ── RENDER TABLA ────────────────────────────────
+function renderTabla(data){
+  var el = document.getElementById("tabla-body");
+  if(!data.length){
+    el.innerHTML='<div class="empty">🔍 Sin resultados</div>';
+    return;
+  }
+
+  el.innerHTML = data.map(function(m){
+    var hoy    = new Date();
+    var venceD = m.vence ? new Date(m.vence) : null;
+    var dias   = venceD ? Math.ceil((venceD-hoy)/(1000*60*60*24)) : null;
+    var venceCls = !venceD?"":dias<0?"vence-exp":dias<30?"vence-warn":"vence-ok";
+    var venceTxt = !venceD?"—":dias<0?"Vencido":dias+"d";
+
+    var badgePlan = m.plan==="trial"
+      ? '<span class="badge badge-trial">⏳ Trial</span>'
+      : m.plan==="profesional"
+      ? '<span class="badge badge-pro">⭐ Pro</span>'
+      : m.plan==="enterprise"
+      ? '<span class="badge badge-pro" style="color:#e879f9;border-color:#e879f9">🚀 Ent</span>'
+      : '<span class="badge badge-bas">📦 Bás</span>';
+
+    var badgeEst = m.activo
+      ? '<span class="badge badge-ok">● Activo</span>'
+      : '<span class="badge badge-off">● Inactivo</span>';
+
+    return '<div class="table-row" onclick=\'abrirDetalle('+JSON.stringify(JSON.stringify(m))+')\' title="Ver detalle">'
+      +'<div class="td">'
+        +'<div style="font-weight:600;color:var(--txt)">'+esc(m.nombre_legal||"—")+'</div>'
+        +'<div class="td-mono">'+esc(m.slug||"—")+'</div>'
+      +'</div>'
+      +'<div class="td">'
+        +'<div>'+esc(m.email||"—")+'</div>'
+        +'<div class="td-pass">'+esc(m.pass||"••••••")+'</div>'
+      +'</div>'
+      +'<div class="td" style="font-size:11px;color:var(--txt2)">'
+        +esc(ESP_MAP[m.especialidad]||m.especialidad||"—")
+        +(m.cedula?'<div class="td-mono" style="color:var(--txt3)">Céd. '+esc(m.cedula)+'</div>':"")
+      +'</div>'
+      +'<div class="td">'+badgePlan+'</div>'
+      +'<div class="td">'
+        +(venceD?'<span class="'+venceCls+'">'+esc(m.vence)+'</span><div style="font-size:10px;color:var(--txt3)">'+venceTxt+'</div>':"—")
+      +'</div>'
+      +'<div class="td">'+badgeEst+'</div>'
+      +'<div class="td" style="display:flex;gap:4px;justify-content:center">'
+        +'<button onclick="event.stopPropagation();enviarWA(\''+esc(m.slug)+'\')" style="padding:4px 8px;border-radius:6px;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;font-size:11px;font-weight:600;cursor:pointer" title="WhatsApp">💬</button>'
+        +'<button onclick="event.stopPropagation();abrirLanding(\''+esc(m.slug)+'\')" style="padding:4px 8px;border-radius:6px;background:rgba(26,127,193,.12);color:var(--p2);border:1px solid rgba(26,127,193,.25);font-size:11px;font-weight:600;cursor:pointer" title="Ver landing">🌐</button>'
+      +'</div>'
+    +'</div>';
+  }).join("");
+}
+
+// ── FILTRO ──────────────────────────────────────
+function filtrar(){
+  var q   = document.getElementById("filtro-txt").value.toLowerCase();
+  var plan= document.getElementById("filtro-plan").value;
+  var act = document.getElementById("filtro-activo").value;
+
+  FILTERED = TODOS.filter(function(m){
+    var matchQ = !q || (m.nombre_legal+m.email+m.slug).toLowerCase().includes(q);
+    var matchP = !plan || m.plan===plan;
+    var matchA = act===""|| (act==="1"&&m.activo)||(act==="0"&&!m.activo);
+    return matchQ && matchP && matchA;
+  });
+  renderTabla(FILTERED);
+}
+
+// ── MODAL DETALLE ───────────────────────────────
+function abrirDetalle(str){
+  var m = JSON.parse(str);
+  var urlL = BASE_URL+"/index.html?lic="+m.slug;
+
+  document.getElementById("modal-nombre").textContent = m.nombre_legal||"Médico";
+  document.getElementById("modal-body").innerHTML =
+    row("🪪 Slug",         '<span class="iv mono">'+esc(m.slug||"—")+'</span>')
+   +row("📧 Email",        '<span class="iv">'+esc(m.email||"—")+'</span>')
+   +row("🔑 Contraseña",   '<span class="iv pass">'+esc(m.pass||"—")+'</span>')
+   +row("🩺 Especialidad", '<span class="iv">'+esc(ESP_MAP[m.especialidad]||m.especialidad||"—")+'</span>')
+   +row("🎓 Cédula",       '<span class="iv">'+esc(m.cedula||"—")+'</span>')
+   +row("📦 Plan",         '<span class="iv">'+esc(m.plan||"—")+'</span>')
+   +row("📅 Vence",        '<span class="iv">'+esc(m.vence||"—")+'</span>')
+   +row("🔵 Estado",       m.activo?'<span class="badge badge-ok">● Activo</span>':'<span class="badge badge-off">● Inactivo</span>')
+   +row("🌐 URL",          '<span class="iv mono" style="font-size:10px">'+urlL+'</span>');
+
+  document.getElementById("btn-m-wa").onclick   = function(){ enviarWA(m.slug); cerrarModal(); };
+  document.getElementById("btn-m-mail").onclick  = function(){ enviarMail(m); };
+  document.getElementById("btn-m-land").onclick  = function(){ abrirLanding(m.slug); };
+
+  document.getElementById("modal-det").classList.add("on");
+}
+
+function row(k,v){ return '<div class="info-row"><span class="ik">'+k+'</span>'+v+'</div>'; }
+
+function cerrarModal(){
+  document.getElementById("modal-det").classList.remove("on");
+}
+window.addEventListener("click",function(e){
+  if(e.target===document.getElementById("modal-det")) cerrarModal();
+});
+
+// ── ACCIONES ────────────────────────────────────
+function buildMsg(m){
+  var urlL = BASE_URL+"/index.html?lic="+m.slug;
+  return "👨‍⚕️ *"+m.nombre_legal+"*\n\n"
+    +"Tu consultorio SaludPro está listo:\n\n"
+    +"🌐 Página de citas (comparte con pacientes):\n"+urlL+"\n\n"
+    +"🔐 Acceso a tu panel (candado 🔐 en la página):\n"+urlL+"\n\n"
+    +"📧 Email: "+m.email+"\n"
+    +"🔑 Contraseña: "+(m.pass||"—")+"\n\n"
+    +"— Equipo SaludPro";
+}
+
+function enviarWA(slug){
+  var m = TODOS.find(function(x){ return x.slug===slug; });
+  if(!m){ toast("Médico no encontrado","err"); return; }
+  window.open("https://wa.me/?text="+encodeURIComponent(buildMsg(m)),"_blank");
+}
+
+function enviarMail(m){
+  var asunto = "Tu consultorio SaludPro está listo";
+  window.location.href="mailto:"+m.email+"?subject="+encodeURIComponent(asunto)+"&body="+encodeURIComponent(buildMsg(m));
+}
+
+function abrirLanding(slug){
+  window.open(BASE_URL+"/index.html?lic="+slug,"_blank");
+}
+
+// ── STATUS ──────────────────────────────────────
+function setStatus(tipo, msg){
+  var el = document.getElementById("conn-status");
+  if(tipo==="ok"){
+    el.className="conn-status conn-ok";
+    el.textContent="✅ "+(msg||"Conectado");
+  } else if(tipo==="err"){
+    el.className="conn-status conn-err";
+    el.textContent="❌ Sin conexión";
+  } else {
+    el.className="conn-status conn-loading";
+    el.textContent="⏳ Conectando…";
+  }
+}
+
+// ── UTILS ────────────────────────────────────────
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+var _tt;
+function toast(msg,tipo){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.className="on "+(tipo||"");
+  clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove("on"); },3500);
+}
+
+// ── INIT ─────────────────────────────────────────
+cargarDatos();
+</script>
+</body>
+</html>
